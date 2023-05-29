@@ -1,3 +1,4 @@
+// LIBS
 import { Field, ObjectType } from '@nestjs/graphql';
 import {
   Column,
@@ -7,6 +8,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
+// IMPORT ENTITIES MODELS
 import { UserEntity } from './user.entity';
 
 @Entity({ name: 'tb_history' })

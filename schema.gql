@@ -113,8 +113,6 @@ type Mutation {
   updateWallet(updateWalletInput: UpdateWalletInput!): WalletEntity!
   removeWallet(id: Int!): WalletEntity!
   createHistory(createHistoryInput: CreateHistoryInput!): HistoryEntity!
-  updateHistory(updateHistoryInput: UpdateHistoryInput!): HistoryEntity!
-  removeHistory(id: Int!): HistoryEntity!
   removeCoin(id: Int!): CoinEntity!
   buyCoin(buyCoinInput: BuyCoinInput!): HistoryEntity!
 }
@@ -173,12 +171,6 @@ input UpdateWalletInput {
 input CreateHistoryInput {
   """Example field (placeholder)"""
   exampleField: Int!
-}
-
-input UpdateHistoryInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
 }
 
 input BuyCoinInput {

@@ -1,4 +1,7 @@
+// LIBS
 import { ObjectType, Field, Int } from '@nestjs/graphql';
+
+// IMPORT ENTITIES MODELS
 import {
   Column,
   CreateDateColumn,

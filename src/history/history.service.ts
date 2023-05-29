@@ -1,6 +1,8 @@
+// LIBS
 import { Injectable } from '@nestjs/common';
+
+// QUERY INPUT GRAPH API IMPORTING
 import { CreateHistoryInput } from './dto/create-history.input';
-import { UpdateHistoryInput } from './dto/update-history.input';
 
 @Injectable()
 export class HistoryService {
@@ -14,13 +16,5 @@ export class HistoryService {
 
   findOne(id: number) {
     return `This action returns a #${id} history`;
-  }
-
-  update(id: number, updateHistoryInput: UpdateHistoryInput) {
-    return `This action updates a #${id} history`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} history`;
   }
 }

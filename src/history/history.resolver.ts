@@ -1,8 +1,14 @@
+// LIBS
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
-import { HistoryService } from './history.service';
-import { CreateHistoryInput } from './dto/create-history.input';
-import { UpdateHistoryInput } from './dto/update-history.input';
+
+// IMPORT ENTITIES MODELS
 import { HistoryEntity } from 'src/entities/history.entity';
+
+// IMPORT SERVICES
+import { HistoryService } from './history.service';
+
+// QUERY INPUT GRAPH API IMPORTING
+import { CreateHistoryInput } from './dto/create-history.input';
 
 @Resolver(() => HistoryEntity)
 export class HistoryResolver {
@@ -23,20 +29,5 @@ export class HistoryResolver {
   @Query(() => HistoryEntity, { name: 'history' })
   findOne(@Args('id', { type: () => Int }) id: number) {
     return this.historyService.findOne(id);
-  }
-
-  @Mutation(() => HistoryEntity)
-  updateHistory(
-    @Args('updateHistoryInput') updateHistoryInput: UpdateHistoryInput,
-  ) {
-    return this.historyService.update(
-      updateHistoryInput.id,
-      updateHistoryInput,
-    );
-  }
-
-  @Mutation(() => HistoryEntity)
-  removeHistory(@Args('id', { type: () => Int }) id: number) {
-    return this.historyService.remove(id);
   }
 }

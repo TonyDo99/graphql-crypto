@@ -37,7 +37,7 @@ export class UserResolver {
   }
 
   @Query(() => [UserEntity], { name: 'user' })
-  findAll() {
+  findAll(): Promise<UserEntity[]> {
     return this.userService.findAll();
   }
 
