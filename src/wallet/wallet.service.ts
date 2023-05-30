@@ -15,7 +15,7 @@ import { UserService } from 'src/user/user.service';
 
 // QUERY INPUT GRAPH API IMPORTING
 import { CreateWalletInput } from './dto/create-wallet.input';
-import { DepositWalletInput } from './dto/update-wallet.input';
+import { DepositWalletInput } from './dto/deposit-wallet.input';
 
 @Injectable()
 export class WalletService {

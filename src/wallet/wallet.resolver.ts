@@ -10,7 +10,7 @@ import { WalletService } from './wallet.service';
 
 // Query Input Graph API importing
 import { CreateWalletInput } from './dto/create-wallet.input';
-import { DepositWalletInput } from './dto/update-wallet.input';
+import { DepositWalletInput } from './dto/deposit-wallet.input';
 
 @Resolver(() => WalletEntity)
 export class WalletResolver {

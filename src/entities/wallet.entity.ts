@@ -27,7 +27,7 @@ export class WalletEntity {
   WL_Name: string;
 
   @Field(() => CURRENCY, { description: 'wallet symbol' })
-  @Column({ type: 'varchar', enum: CURRENCY })
+  @Column({ type: 'varchar', enum: CURRENCY, nullable: true })
   WL_Currency: CURRENCY;
 
   @Field(() => Number, { description: 'wallet base value' })
