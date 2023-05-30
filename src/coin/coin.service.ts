@@ -1,20 +1,31 @@
+// Libs
 import {
   BadRequestException,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { BuyCoinInput } from './dto/buy-coin.input';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CoinEntity } from 'src/entities/coin.entity';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Repository, DataSource } from 'typeorm';
-
+import { Cache } from 'cache-manager';
 import axios from 'axios';
+
+// Service import
 import { UserService } from 'src/user/user.service';
+
+// Query Input Graph API importing
+import { BuyCoinInput } from './dto/buy-coin.input';
+
+// Entity import
+import { CoinEntity } from 'src/entities/coin.entity';
 import { UserEntity } from 'src/entities/user.entity';
 import { WalletEntity } from 'src/entities/wallet.entity';
 import { HistoryEntity } from 'src/entities/history.entity';
+
+// Types import
 import { IResConvertCurrency } from 'src/wallet/types/converted';
 
 @Injectable()
@@ -32,18 +43,27 @@ export class CoinService {
     @InjectRepository(HistoryEntity)
     private readonly historyRepository: Repository<HistoryEntity>,
 
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+
     private readonly dataSource: DataSource,
 
     private readonly userService: UserService,
   ) {}
 
-  findAll(): Promise<CoinEntity[]> {
+  async findAll(): Promise<CoinEntity[]> {
     try {
-      return this.coinRepository.find({
-        order: {
-          CN_Rank: 'DESC',
-        },
-      });
+      const coinsCache: CoinEntity[] = await this.cacheManager.get('coins');
+
+      if (!coinsCache) {
+        const coins = await this.coinRepository.find({
+          order: {
+            CN_Rank: 'ASC',
+          },
+        });
+        await this.cacheManager.set('coins', coins, 0);
+        return coins;
+      }
+      return coinsCache;
     } catch (error) {
       throw new BadRequestException(error, {
         cause: error.message,

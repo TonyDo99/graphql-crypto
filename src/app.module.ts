@@ -9,9 +9,13 @@ import { WalletModule } from './wallet/wallet.module';
 import { HistoryModule } from './history/history.module';
 import { CoinModule } from './coin/coin.module';
 import { AppController } from './app.controller';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
+    CacheModule.register({
+      isGlobal: true,
+    }),
     ConfigModule.forRoot({
       envFilePath: `${
         process.env.NODE_ENV === 'dev' ? '.env.local' : '.env.production'
@@ -26,6 +30,7 @@ import { AppController } from './app.controller';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'schema.gql'),
+      sortSchema: true,
     }),
     UserModule,
     WalletModule,

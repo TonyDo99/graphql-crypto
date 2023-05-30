@@ -2,114 +2,54 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type WalletEntity {
-  """wallet id"""
-  WL_Id: Float!
+input BuyCoinInput {
+  """coin id"""
+  coinId: String!
 
-  """wallet name"""
-  WL_Name: String!
+  """currency money"""
+  currency: String!
 
-  """wallet symbol"""
-  WL_Currency: Currency!
+  """money buy"""
+  money: Float!
 
-  """wallet base value"""
-  WL_Amount: Float!
+  """quantity coin buy"""
+  quantity: Int!
 
-  """wallet image"""
-  WL_Image: String!
-  created_at: DateTime!
-  last_updated: DateTime!
-  user: UserEntity!
-}
-
-enum Currency {
-  USD
-  VND
-  JPY
-  CNY
-  SGD
-  KPW
-  THB
-  RUB
-  GBP
-  AUD
-  AFN
-  INR
-  EUR
-}
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
-type HistoryEntity {
-  """history id bought"""
-  HSR_id: String!
-
-  """symbol currency"""
-  HSR_symbol: String!
-
-  """currency currency"""
-  HSR_currency: String!
-
-  """symbol currency"""
-  HSR_paid: String!
-
-  """quantity coin bought"""
-  HSR_quantity: Float!
-
-  """create date history"""
-  created_at: String!
-
-  """last update history bought"""
-  last_updated: String!
-}
-
-type UserEntity {
-  """id of user"""
-  US_Id: String!
-  US_Name: String!
-  US_Email: String!
-  US_Password: String!
-  US_Age: Int!
-  created_at: DateTime!
-  last_updated: DateTime!
-  wallets: [WalletEntity!]!
-  histories: [HistoryEntity!]!
+  """user id"""
+  userId: String!
 }
 
 type CoinEntity {
+  """circulating supply: change of coin market"""
+  CN_Circulating_Supply: Float!
+
   """id coin market"""
   CN_Id: String!
 
+  """image of coin market"""
+  CN_Image: String!
+
+  """max supply of coin market"""
+  CN_Max_Supply: Float
+
   """name of coin market"""
   CN_Name: String!
-
-  """symbol of coin market"""
-  CN_Symbol: String!
-
-  """slug of coin market"""
-  CN_Slug: String!
+  CN_Num_Market_Pairs: Float!
 
   """price base on usd of coin market"""
   CN_Price: Float!
 
   """rank of coin market"""
   CN_Rank: Float!
-  CN_Num_Market_Pairs: Float!
 
-  """image of coin market"""
-  CN_Image: String!
+  """slug of coin market"""
+  CN_Slug: String!
 
-  """circulating supply: change of coin market"""
-  CN_Circulating_Supply: Float!
+  """symbol of coin market"""
+  CN_Symbol: String!
 
   """total was supply of coin market"""
   CN_Total_Supply: Float!
-
-  """max supply of coin market"""
-  CN_Max_Supply: Float
 
   """create time of coin market"""
   created_at: DateTime!
@@ -118,39 +58,87 @@ type CoinEntity {
   last_updated: DateTime!
 }
 
-type Query {
-  user: [UserEntity!]!
-  userId(userId: String!): UserEntity!
-  wallets: [WalletEntity!]!
-  findWalletById(walletId: Int!): WalletEntity!
-  histories: [HistoryEntity!]!
-  historyDetail(historyId: String!): HistoryEntity!
-  coins: [CoinEntity!]
-  coin(coinId: String): CoinEntity!
-}
-
-type Mutation {
-  createUser(createUserInput: CreateUserInput!): UserEntity!
-  deleteUser(userId: String!): UserEntity!
-  login(loginInput: LoginUserInput!): UserEntity!
-  createWallet(createWalletInput: CreateWalletInput!): WalletEntity!
-  depositWallet(depositWalletInput: DepositWalletInput!): WalletEntity!
-  removeWallet(walletId: Int!): WalletEntity!
-  buyCoin(buyCoinInput: BuyCoinInput!): HistoryEntity!
-}
-
 input CreateUserInput {
-  """name of user"""
-  name: String!
-
   """age of user"""
   age: Int!
 
   """email of user"""
   email: String!
 
+  """name of user"""
+  name: String!
+
   """password of user"""
   password: String!
+}
+
+input CreateWalletInput {
+  """Money in wallet"""
+  amount: Float!
+
+  """symbol in wallet"""
+  currency: Currency!
+
+  """currency image in wallet"""
+  imageUrl: String!
+
+  """Name in wallet"""
+  name: String!
+
+  """user id"""
+  userId: String!
+}
+
+enum Currency {
+  AFN
+  AUD
+  CNY
+  EUR
+  GBP
+  INR
+  JPY
+  KPW
+  RUB
+  SGD
+  THB
+  USD
+  VND
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+input DepositWalletInput {
+  """Amount need to deposit"""
+  amount: Float!
+
+  """wallet id"""
+  walletId: Int!
+}
+
+type HistoryEntity {
+  """currency currency"""
+  HSR_currency: String!
+
+  """history id bought"""
+  HSR_id: String!
+
+  """symbol currency"""
+  HSR_paid: String!
+
+  """quantity coin bought"""
+  HSR_quantity: Float!
+
+  """symbol currency"""
+  HSR_symbol: String!
+
+  """create date history"""
+  created_at: String!
+
+  """last update history bought"""
+  last_updated: String!
 }
 
 input LoginUserInput {
@@ -161,44 +149,57 @@ input LoginUserInput {
   password: String!
 }
 
-input CreateWalletInput {
-  """Name in wallet"""
-  name: String!
-
-  """symbol in wallet"""
-  currency: Currency!
-
-  """Money in wallet"""
-  amount: Float!
-
-  """currency image in wallet"""
-  imageUrl: String!
-
-  """user id"""
-  userId: String!
+type Mutation {
+  buyCoin(buyCoinInput: BuyCoinInput!): HistoryEntity!
+  createUser(createUserInput: CreateUserInput!): UserEntity!
+  createWallet(createWalletInput: CreateWalletInput!): WalletEntity!
+  deleteUser(userId: String!): UserEntity!
+  depositWallet(depositWalletInput: DepositWalletInput!): WalletEntity!
+  login(loginInput: LoginUserInput!): UserEntity!
+  removeWallet(walletId: Int!): WalletEntity!
 }
 
-input DepositWalletInput {
-  """Amount need to deposit"""
-  amount: Float!
+type Query {
+  coin(coinId: String!): CoinEntity!
+  coins: [CoinEntity!]
+  findWalletById(walletId: Int!): WalletEntity!
+  histories: [HistoryEntity!]!
+  historyDetail(historyId: String!): HistoryEntity!
+  user: [UserEntity!]!
+  userId(userId: String!): UserEntity!
+  wallets: [WalletEntity!]!
+}
+
+type UserEntity {
+  US_Age: Int!
+  US_Email: String!
+
+  """id of user"""
+  US_Id: String!
+  US_Name: String!
+  US_Password: String!
+  created_at: DateTime!
+  histories: [HistoryEntity!]!
+  last_updated: DateTime!
+  wallets: [WalletEntity!]!
+}
+
+type WalletEntity {
+  """wallet base value"""
+  WL_Amount: Float!
+
+  """wallet symbol"""
+  WL_Currency: Currency!
 
   """wallet id"""
-  walletId: Int!
-}
+  WL_Id: Float!
 
-input BuyCoinInput {
-  """coin id"""
-  coinId: String!
+  """wallet image"""
+  WL_Image: String!
 
-  """user id"""
-  userId: String!
-
-  """quantity coin buy"""
-  quantity: Int!
-
-  """money buy"""
-  money: Float!
-
-  """currency money"""
-  currency: String!
+  """wallet name"""
+  WL_Name: String!
+  created_at: DateTime!
+  last_updated: DateTime!
+  user: UserEntity!
 }
