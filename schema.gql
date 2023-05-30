@@ -164,6 +164,17 @@ type Query {
   wallets: [WalletEntity!]!
 }
 
+type UserBoughtCoin {
+  """Coin image user was bought"""
+  htr_HSR_symbol: String!
+
+  """Coin amount user was bought"""
+  paid: Float!
+
+  """Coin quantity user was bought"""
+  quantityBought: Int!
+}
+
 type UserEntity {
   US_Age: Int!
   US_Email: String!
@@ -172,6 +183,9 @@ type UserEntity {
   US_Id: String!
   US_Name: String!
   US_Password: String!
+
+  """Coin list user was buy"""
+  coinsWasBought: [UserBoughtCoin!]!
   created_at: DateTime!
   histories: [HistoryEntity!]!
   last_updated: DateTime!

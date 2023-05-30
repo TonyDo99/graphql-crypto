@@ -1,5 +1,5 @@
 // LIBS
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Parent } from '@nestjs/graphql';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { DeleteResult } from 'typeorm';
 

@@ -10,9 +10,10 @@ import { UserService } from './user.service';
 
 // QUERY INPUT GRAPH API IMPORTING
 import { UserResolver } from './user.resolver';
+import { HistoryEntity } from 'src/entities/history.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserEntity])],
+  imports: [TypeOrmModule.forFeature([UserEntity, HistoryEntity])],
   providers: [UserResolver, UserService],
   exports: [UserService],
 })

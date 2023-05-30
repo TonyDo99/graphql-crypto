@@ -13,12 +13,16 @@ import { UserEntity } from 'src/entities/user.entity';
 // QUERY INPUT GRAPH API IMPORTING
 import { CreateUserInput } from './dto/create-user.input';
 import { LoginUserInput } from './dto/login-user.input';
+import { HistoryEntity } from 'src/entities/history.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+
+    @InjectRepository(HistoryEntity)
+    private readonly historyRepository: Repository<HistoryEntity>,
   ) {}
 
   async create(createUserInput: CreateUserInput): Promise<UserEntity> {
@@ -73,9 +77,21 @@ export class UserService {
         },
       });
 
+      const coinsWasBought = await this.historyRepository
+        .createQueryBuilder('htr')
+        .select('htr.HSR_symbol')
+        .addSelect('sum(htr.HSR_paid)', 'paid')
+        .addSelect('sum(htr.HSR_quantity)', 'quantityBought')
+        .groupBy('htr.HSR_symbol')
+        .addGroupBy('htr.userUSId')
+        .having('htr.userUSId = :userId', {
+          userId,
+        })
+        .execute();
+
       if (!exists) throw new NotFoundException('User is not exist !');
 
-      return exists;
+      return { ...exists, coinsWasBought };
     } catch (error) {
       throw new BadRequestException(error, {
         cause: error.message,

@@ -59,8 +59,13 @@ export class WalletService {
 
   async findOneById(walletId: number): Promise<WalletEntity> {
     try {
-      const wallet = await this.walletRepository.findOneBy({
-        WL_Id: walletId,
+      const wallet = await this.walletRepository.findOne({
+        where: {
+          WL_Id: walletId,
+        },
+        order: {
+          WL_Id: 'ASC',
+        },
       });
 
       if (!wallet)

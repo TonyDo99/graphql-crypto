@@ -12,6 +12,7 @@ import {
 } from 'typeorm';
 import { WalletEntity } from './wallet.entity';
 import { HistoryEntity } from './history.entity';
+import { UserBoughtCoin } from 'src/user/dto/bought-coin.output';
 
 @Entity({
   name: 'tb_user',
@@ -66,4 +67,7 @@ export class UserEntity {
   @Field(() => [HistoryEntity])
   @OneToMany(() => HistoryEntity, (ref) => ref.user)
   histories: HistoryEntity[];
+
+  @Field(() => [UserBoughtCoin], { description: 'Coin list user was buy' })
+  coinsWasBought: UserBoughtCoin[];
 }
