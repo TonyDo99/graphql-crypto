@@ -87,9 +87,8 @@ export class CoinService {
 
   async buyCoin({
     coinId,
-    money,
     quantity,
-    currency,
+    walletId,
     userId,
   }: BuyCoinInput): Promise<HistoryEntity> {
     try {
@@ -102,7 +101,7 @@ export class CoinService {
         where: {
           US_Id: userId,
           wallets: {
-            WL_Currency: currency,
+            WL_Id: walletId,
           },
         },
       });
@@ -121,11 +120,13 @@ export class CoinService {
           'This coin are not available right now. Please try with another coin !',
         );
 
+      const bought = quantity * coin.CN_Price;
+
       const { data }: { data: IResConvertCurrency } = await axios.get(
         `${process.env.NINJA_CONVERT_URL}`,
         {
           params: {
-            have: currency,
+            have: hasWallet.wallets[0].WL_Currency,
             want: 'USD',
             amount: hasWallet.wallets[0].WL_Amount,
           },
@@ -134,7 +135,7 @@ export class CoinService {
 
       if (data.error) throw new BadRequestException(data.error);
 
-      if (data.new_amount < coin.CN_Price)
+      if (data.new_amount < bought)
         throw new BadRequestException(
           'Wallet are not enough money to buy this coin !',
         );
@@ -142,8 +143,8 @@ export class CoinService {
       const hasLeft = await axios.get(`${process.env.NINJA_CONVERT_URL}`, {
         params: {
           have: 'USD',
-          want: currency,
-          amount: data.new_amount - coin.CN_Price,
+          want: hasWallet.wallets[0].WL_Currency,
+          amount: data.new_amount - bought,
         },
       });
 
@@ -160,8 +161,8 @@ export class CoinService {
           .into(HistoryEntity)
           .values({
             HSR_symbol: coin.CN_Symbol,
-            HSR_currency: currency,
-            HSR_paid: money,
+            HSR_currency: hasWallet.wallets[0].WL_Currency,
+            HSR_paid: hasWallet.wallets[0].WL_Amount - hasLeft.data.new_amount,
             HSR_quantity: quantity,
             user,
           })
@@ -186,7 +187,7 @@ export class CoinService {
         );
         await queryRunner.rollbackTransaction();
       } finally {
-        console.log('done transaction');
+        console.log('transaction buy coin successfully !');
 
         await queryRunner.release();
 

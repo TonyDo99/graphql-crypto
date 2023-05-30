@@ -6,17 +6,14 @@ input BuyCoinInput {
   """coin id"""
   coinId: String!
 
-  """currency money"""
-  currency: String!
-
-  """money buy"""
-  money: Float!
-
   """quantity coin buy"""
   quantity: Int!
 
   """user id"""
   userId: String!
+
+  """wallet id"""
+  walletId: Int!
 }
 
 type CoinEntity {
