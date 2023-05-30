@@ -89,17 +89,18 @@ export class CoinService {
     coinId,
     quantity,
     walletId,
-    userId,
   }: BuyCoinInput): Promise<HistoryEntity> {
     try {
-      const user = await this.userService.findUserById(userId);
+      // const user = await this.userService.findUserById(userId);
 
       const hasWallet = await this.userRepository.findOne({
+        select: {
+          US_Id: true,
+        },
         relations: {
           wallets: true,
         },
         where: {
-          US_Id: userId,
           wallets: {
             WL_Id: walletId,
           },
@@ -126,27 +127,19 @@ export class CoinService {
         `${process.env.NINJA_CONVERT_URL}`,
         {
           params: {
-            have: hasWallet.wallets[0].WL_Currency,
-            want: 'USD',
-            amount: hasWallet.wallets[0].WL_Amount,
+            have: 'USD',
+            want: hasWallet.wallets[0].WL_Currency,
+            amount: bought,
           },
         },
       );
 
       if (data.error) throw new BadRequestException(data.error);
 
-      if (data.new_amount < bought)
+      if (hasWallet.wallets[0].WL_Amount < data.new_amount)
         throw new BadRequestException(
           'Wallet are not enough money to buy this coin !',
         );
-
-      const hasLeft = await axios.get(`${process.env.NINJA_CONVERT_URL}`, {
-        params: {
-          have: 'USD',
-          want: hasWallet.wallets[0].WL_Currency,
-          amount: data.new_amount - bought,
-        },
-      });
 
       const queryRunner = this.dataSource.createQueryRunner();
 
@@ -162,9 +155,9 @@ export class CoinService {
           .values({
             HSR_symbol: coin.CN_Symbol,
             HSR_currency: hasWallet.wallets[0].WL_Currency,
-            HSR_paid: hasWallet.wallets[0].WL_Amount - hasLeft.data.new_amount,
+            HSR_paid: data.new_amount,
             HSR_quantity: quantity,
-            user,
+            user: hasWallet,
           })
           .execute();
 
@@ -172,7 +165,7 @@ export class CoinService {
           .createQueryBuilder()
           .update(WalletEntity)
           .set({
-            WL_Amount: hasLeft.data.new_amount,
+            WL_Amount: hasWallet.wallets[0].WL_Amount - data.new_amount,
           })
           .where('WL_Id = :walletId', { walletId: hasWallet.wallets[0].WL_Id })
           .execute();

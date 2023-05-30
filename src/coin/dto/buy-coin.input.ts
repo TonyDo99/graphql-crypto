@@ -8,10 +8,10 @@ export class BuyCoinInput {
   @IsUUID()
   coinId: string;
 
-  @Field(() => String, { description: 'user id' })
-  @IsNotEmpty()
-  @IsUUID()
-  userId: string;
+  // @Field(() => String, { description: 'user id' })
+  // @IsNotEmpty()
+  // @IsUUID()
+  // userId: string;
 
   @Field(() => Int, { description: 'wallet id' })
   @IsNotEmpty()

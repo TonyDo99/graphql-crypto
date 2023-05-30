@@ -9,9 +9,6 @@ input BuyCoinInput {
   """quantity coin buy"""
   quantity: Int!
 
-  """user id"""
-  userId: String!
-
   """wallet id"""
   walletId: Int!
 }
