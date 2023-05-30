@@ -1,20 +1,39 @@
 // LIBS
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
-// QUERY INPUT GRAPH API IMPORTING
-import { CreateHistoryInput } from './dto/create-history.input';
+// IMPORT ENTITIES MODELS
+import { HistoryEntity } from 'src/entities/history.entity';
 
 @Injectable()
 export class HistoryService {
-  create(createHistoryInput: CreateHistoryInput) {
-    return 'This action adds a new history';
+  constructor(
+    @InjectRepository(HistoryEntity)
+    private readonly historyRepository: Repository<HistoryEntity>,
+  ) {}
+
+  histories(): Promise<HistoryEntity[]> {
+    try {
+      return this.historyRepository.find({});
+    } catch (error) {
+      throw new BadRequestException(error, {
+        cause: error.message,
+      });
+    }
   }
 
-  findAll() {
-    return `This action returns all history`;
-  }
+  async findOneById(historyId: string): Promise<HistoryEntity> {
+    try {
+      const history = await this.historyRepository.findOneBy({
+        HSR_id: historyId,
+      });
 
-  findOne(id: number) {
-    return `This action returns a #${id} history`;
+      return history;
+    } catch (error) {
+      throw new BadRequestException(error, {
+        cause: error.message,
+      });
+    }
   }
 }

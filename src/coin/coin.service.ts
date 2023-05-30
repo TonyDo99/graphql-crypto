@@ -5,8 +5,6 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateCoinInput } from './dto/create-coin.input';
-import { UpdateCoinInput } from './dto/update-coin.input';
 import { BuyCoinInput } from './dto/buy-coin.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CoinEntity } from 'src/entities/coin.entity';
@@ -41,7 +39,11 @@ export class CoinService {
 
   findAll(): Promise<CoinEntity[]> {
     try {
-      return this.coinRepository.find({});
+      return this.coinRepository.find({
+        order: {
+          CN_Rank: 'DESC',
+        },
+      });
     } catch (error) {
       throw new BadRequestException(error, {
         cause: error.message,
@@ -49,15 +51,27 @@ export class CoinService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} coin`;
+  async findOne(coinId: string): Promise<CoinEntity> {
+    try {
+      const coin = await this.coinRepository.findOneBy({
+        CN_Id: coinId,
+      });
+
+      return coin;
+    } catch (error) {
+      throw new BadRequestException(error, {
+        cause: error.message,
+      });
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} coin`;
-  }
-
-  async buyCoin({ coinId, money, quantity, currency, userId }: BuyCoinInput) {
+  async buyCoin({
+    coinId,
+    money,
+    quantity,
+    currency,
+    userId,
+  }: BuyCoinInput): Promise<HistoryEntity> {
     try {
       const user = await this.userService.findUserById(userId);
 
@@ -68,7 +82,7 @@ export class CoinService {
         where: {
           US_Id: userId,
           wallets: {
-            WL_Symbol: currency,
+            WL_Currency: currency,
           },
         },
       });

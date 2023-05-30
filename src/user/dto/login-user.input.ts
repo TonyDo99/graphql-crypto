@@ -20,12 +20,3 @@ export class LoginUserInput {
   @IsStrongPassword()
   password: string;
 }
-
-// @ObjectType()
-// export class LoginUserOutput {
-//   @Field(() => Boolean, { description: 'status response' })
-//   status: boolean;
-
-//   @Field(() => String, { description: 'message response' })
-//   message: string;
-// }

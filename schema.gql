@@ -10,13 +10,32 @@ type WalletEntity {
   WL_Name: String!
 
   """wallet symbol"""
-  WL_Symbol: String!
+  WL_Currency: Currency!
 
   """wallet base value"""
   WL_Amount: Float!
+
+  """wallet image"""
+  WL_Image: String!
   created_at: DateTime!
   last_updated: DateTime!
   user: UserEntity!
+}
+
+enum Currency {
+  USD
+  VND
+  JPY
+  CNY
+  SGD
+  KPW
+  THB
+  RUB
+  GBP
+  AUD
+  AFN
+  INR
+  EUR
 }
 
 """
@@ -80,6 +99,9 @@ type CoinEntity {
   CN_Rank: Float!
   CN_Num_Market_Pairs: Float!
 
+  """image of coin market"""
+  CN_Image: String!
+
   """circulating supply: change of coin market"""
   CN_Circulating_Supply: Float!
 
@@ -99,10 +121,12 @@ type CoinEntity {
 type Query {
   user: [UserEntity!]!
   userId(userId: String!): UserEntity!
-  wallet(walletId: Int!): WalletEntity!
-  history(id: Int!): HistoryEntity!
+  wallets: [WalletEntity!]!
+  findWalletById(walletId: Int!): WalletEntity!
+  histories: [HistoryEntity!]!
+  historyDetail(historyId: String!): HistoryEntity!
   coins: [CoinEntity!]
-  coin(id: Int!): CoinEntity!
+  coin(coinId: String): CoinEntity!
 }
 
 type Mutation {
@@ -110,10 +134,8 @@ type Mutation {
   deleteUser(userId: String!): UserEntity!
   login(loginInput: LoginUserInput!): UserEntity!
   createWallet(createWalletInput: CreateWalletInput!): WalletEntity!
-  updateWallet(updateWalletInput: UpdateWalletInput!): WalletEntity!
-  removeWallet(id: Int!): WalletEntity!
-  createHistory(createHistoryInput: CreateHistoryInput!): HistoryEntity!
-  removeCoin(id: Int!): CoinEntity!
+  depositWallet(depositWalletInput: DepositWalletInput!): WalletEntity!
+  removeWallet(walletId: Int!): WalletEntity!
   buyCoin(buyCoinInput: BuyCoinInput!): HistoryEntity!
 }
 
@@ -144,33 +166,24 @@ input CreateWalletInput {
   name: String!
 
   """symbol in wallet"""
-  symbol: String!
+  currency: Currency!
 
   """Money in wallet"""
   amount: Float!
+
+  """currency image in wallet"""
+  imageUrl: String!
 
   """user id"""
   userId: String!
 }
 
-input UpdateWalletInput {
-  """Name in wallet"""
-  name: String
+input DepositWalletInput {
+  """Amount need to deposit"""
+  amount: Float!
 
-  """symbol in wallet"""
-  symbol: String
-
-  """Money in wallet"""
-  amount: Float
-
-  """user id"""
-  userId: String
-  id: Int!
-}
-
-input CreateHistoryInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  """wallet id"""
+  walletId: Int!
 }
 
 input BuyCoinInput {

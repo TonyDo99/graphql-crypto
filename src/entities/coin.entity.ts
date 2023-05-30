@@ -39,6 +39,10 @@ export class CoinEntity {
   @Column({ type: 'int', nullable: false })
   CN_Num_Market_Pairs: number;
 
+  @Field(() => String, { description: 'image of coin market' })
+  @Column({ type: 'varchar', nullable: true })
+  CN_Image: number;
+
   @Field(() => Number, {
     description: 'circulating supply: change of coin market',
   })

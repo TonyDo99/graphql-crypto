@@ -28,5 +28,5 @@ export class BuyCoinInput {
   @Field(() => String, { description: 'currency money' })
   @IsNotEmpty()
   @IsEnum(CURRENCY)
-  currency: string;
+  currency: CURRENCY;
 }

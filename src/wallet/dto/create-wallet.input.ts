@@ -5,6 +5,7 @@ import {
   IsNumber,
   IsString,
   IsUUID,
+  IsUrl,
   Min,
 } from 'class-validator';
 import { CURRENCY } from '../types/currency';
@@ -16,17 +17,25 @@ export class CreateWalletInput {
   @IsString()
   name: string;
 
-  @Field(() => String, { description: 'symbol in wallet' })
+  @Field(() => CURRENCY, {
+    description: 'symbol in wallet',
+  })
   @IsNotEmpty()
-  @IsString()
-  @IsEnum(CURRENCY, { message: 'This currency is not available !' })
-  symbol: string;
+  @IsEnum(CURRENCY, {
+    message: 'This currency are not support in this moment !',
+  })
+  currency: CURRENCY;
 
   @Field(() => Number, { description: 'Money in wallet' })
   @IsNotEmpty()
   @IsNumber()
   @Min(0.1)
   amount: number;
+
+  @Field(() => String, { description: 'currency image in wallet' })
+  @IsNotEmpty()
+  @IsUrl()
+  imageUrl: string;
 
   @Field(() => String, { description: 'user id' })
   @IsNotEmpty()

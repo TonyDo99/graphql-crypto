@@ -10,7 +10,7 @@ import { WalletService } from './wallet.service';
 
 // Query Input Graph API importing
 import { CreateWalletInput } from './dto/create-wallet.input';
-import { UpdateWalletInput } from './dto/update-wallet.input';
+import { DepositWalletInput } from './dto/update-wallet.input';
 
 @Resolver(() => WalletEntity)
 export class WalletResolver {
@@ -19,31 +19,34 @@ export class WalletResolver {
   @Mutation(() => WalletEntity)
   createWallet(
     @Args('createWalletInput') createWalletInput: CreateWalletInput,
-  ) {
+  ): Promise<WalletEntity> {
     return this.walletService.create(createWalletInput);
   }
 
-  @Query(() => [WalletEntity], { name: 'wallet' })
+  @Query(() => [WalletEntity], { name: 'wallets' })
   findAll(): Promise<WalletEntity[]> {
     return this.walletService.findWallets();
   }
 
-  @Query(() => WalletEntity, { name: 'wallet' })
+  @Query(() => WalletEntity, { name: 'findWalletById' })
   findOne(
-    @Args('walletId', { type: () => Int }, new ParseIntPipe()) walletId: number,
-  ) {
+    @Args('walletId', { type: () => Int, nullable: false }, new ParseIntPipe())
+    walletId: number,
+  ): Promise<WalletEntity> {
     return this.walletService.findOneById(walletId);
   }
 
   @Mutation(() => WalletEntity)
-  updateWallet(
-    @Args('updateWalletInput') updateWalletInput: UpdateWalletInput,
-  ) {
-    return this.walletService.update(updateWalletInput.id, updateWalletInput);
+  depositWallet(
+    @Args('depositWalletInput') depositWalletInput: DepositWalletInput,
+  ): Promise<WalletEntity> {
+    return this.walletService.depositWallet(depositWalletInput);
   }
 
-  @Mutation(() => WalletEntity)
-  removeWallet(@Args('id', { type: () => Int }) id: number) {
-    return this.walletService.remove(id);
+  @Mutation(() => WalletEntity, { name: 'removeWallet' })
+  removeWallet(
+    @Args('walletId', { type: () => Int, nullable: false }) walletId: number,
+  ): Promise<WalletEntity> {
+    return this.walletService.removeWallet(walletId);
   }
 }

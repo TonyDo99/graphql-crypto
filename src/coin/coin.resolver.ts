@@ -1,10 +1,9 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { CoinService } from './coin.service';
-import { CreateCoinInput } from './dto/create-coin.input';
-import { UpdateCoinInput } from './dto/update-coin.input';
 import { CoinEntity } from 'src/entities/coin.entity';
 import { HistoryEntity } from 'src/entities/history.entity';
 import { BuyCoinInput } from './dto/buy-coin.input';
+import { ParseUUIDPipe } from '@nestjs/common';
 
 @Resolver(() => CoinEntity)
 export class CoinResolver {
@@ -16,17 +15,17 @@ export class CoinResolver {
   }
 
   @Query(() => CoinEntity, { name: 'coin' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.coinService.findOne(id);
-  }
-
-  @Mutation(() => CoinEntity)
-  removeCoin(@Args('id', { type: () => Int }) id: number) {
-    return this.coinService.remove(id);
+  findOne(
+    @Args('coinId', { type: () => String, nullable: true }, new ParseUUIDPipe())
+    coinId: string,
+  ): Promise<CoinEntity> {
+    return this.coinService.findOne(coinId);
   }
 
   @Mutation(() => HistoryEntity)
-  buyCoin(@Args('buyCoinInput') buyCoinInput: BuyCoinInput) {
+  buyCoin(
+    @Args('buyCoinInput') buyCoinInput: BuyCoinInput,
+  ): Promise<HistoryEntity> {
     return this.coinService.buyCoin(buyCoinInput);
   }
 }

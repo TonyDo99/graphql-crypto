@@ -12,9 +12,10 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { UserEntity } from './user.entity';
+import { CURRENCY } from 'src/wallet/types/currency';
 
 @Entity({ name: 'tb_wallet' })
-@Unique(['WL_Symbol', 'user'])
+@Unique(['WL_Currency', 'user'])
 @ObjectType()
 export class WalletEntity {
   @Field(() => Number, { description: 'wallet id' })
@@ -25,13 +26,17 @@ export class WalletEntity {
   @Column({ type: 'varchar' })
   WL_Name: string;
 
-  @Field(() => String, { description: 'wallet symbol' })
-  @Column({ type: 'varchar' })
-  WL_Symbol: string;
+  @Field(() => CURRENCY, { description: 'wallet symbol' })
+  @Column({ type: 'varchar', enum: CURRENCY })
+  WL_Currency: CURRENCY;
 
   @Field(() => Number, { description: 'wallet base value' })
   @Column({ type: 'float' })
   WL_Amount: number;
+
+  @Field(() => String, { description: 'wallet image' })
+  @Column({ type: 'varchar', nullable: true })
+  WL_Image: string;
 
   @Field(() => Date)
   @CreateDateColumn()

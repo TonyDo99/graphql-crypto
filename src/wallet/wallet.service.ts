@@ -15,7 +15,7 @@ import { UserService } from 'src/user/user.service';
 
 // QUERY INPUT GRAPH API IMPORTING
 import { CreateWalletInput } from './dto/create-wallet.input';
-import { UpdateWalletInput } from './dto/update-wallet.input';
+import { DepositWalletInput } from './dto/update-wallet.input';
 
 @Injectable()
 export class WalletService {
@@ -27,14 +27,15 @@ export class WalletService {
 
   async create(createWalletInput: CreateWalletInput): Promise<WalletEntity> {
     try {
-      const { name, symbol, amount, userId } = createWalletInput;
+      const { name, currency, amount, userId, imageUrl } = createWalletInput;
 
       const user = await this.userService.findUserById(userId);
 
       const wallet = this.walletRepository.create({
         WL_Name: name,
-        WL_Symbol: symbol,
+        WL_Currency: currency,
         WL_Amount: amount,
+        WL_Image: imageUrl,
         user,
       });
 
@@ -71,11 +72,47 @@ export class WalletService {
     }
   }
 
-  update(id: number, updateWalletInput: UpdateWalletInput) {
-    return `This action updates a #${id} wallet`;
+  async depositWallet(
+    depositWalletInput: DepositWalletInput,
+  ): Promise<WalletEntity> {
+    try {
+      const { amount, walletId } = depositWalletInput;
+
+      const wallet = await this.walletRepository
+        .createQueryBuilder()
+        .update(WalletEntity)
+        .set({
+          WL_Amount: () => `"WL_Amount" + ${amount}`,
+        })
+        .where('WL_Id = :WL_Id', { WL_Id: walletId })
+        .returning('*')
+        .execute();
+
+      return wallet.raw[0];
+    } catch (error) {
+      throw new BadRequestException(error, {
+        cause: error.message,
+      });
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} wallet`;
+  async removeWallet(walletId: number): Promise<WalletEntity> {
+    try {
+      await this.findOneById(walletId);
+
+      const deletedWallet = await this.walletRepository
+        .createQueryBuilder()
+        .delete()
+        .from(WalletEntity)
+        .where('WL_Id = :walletId', { walletId })
+        .returning('*')
+        .execute();
+
+      return deletedWallet.raw[0];
+    } catch (error) {
+      throw new BadRequestException(error, {
+        cause: error.message,
+      });
+    }
   }
 }
