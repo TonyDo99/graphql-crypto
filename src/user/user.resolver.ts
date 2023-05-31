@@ -12,6 +12,7 @@ import { UserService } from './user.service';
 // QUERY INPUT GRAPH API IMPORTING
 import { CreateUserInput } from './dto/create-user.input';
 import { LoginUserInput } from './dto/login-user.input';
+import { WalletEntity } from 'src/entities/wallet.entity';
 
 @Resolver(() => UserEntity)
 export class UserResolver {

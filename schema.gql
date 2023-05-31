@@ -161,7 +161,12 @@ type Query {
   historyDetail(historyId: String!): HistoryEntity!
   user: [UserEntity!]!
   userId(userId: String!): UserEntity!
+  walletOfUser(userId: String!): [WalletEntity!]!
   wallets: [WalletEntity!]!
+}
+
+type Subscription {
+  walletOfUser: [WalletEntity!]!
 }
 
 type UserBoughtCoin {

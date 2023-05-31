@@ -77,14 +77,37 @@ export class WalletService {
     }
   }
 
+  async getWalletOfUser(userId: string): Promise<WalletEntity[]> {
+    try {
+      const walletUser = await this.walletRepository.find({
+        relations: {
+          user: true,
+        },
+        where: {
+          user: {
+            US_Id: userId,
+          },
+        },
+      });
+      return walletUser;
+    } catch (error) {
+      throw new BadRequestException(error, {
+        cause: error.message,
+      });
+    }
+  }
+
   async depositWallet(
     depositWalletInput: DepositWalletInput,
   ): Promise<WalletEntity> {
     try {
       const { amount, walletId } = depositWalletInput;
 
+      await this.findOneById(walletId);
+
       const wallet = await this.walletRepository
         .createQueryBuilder()
+        .select('*')
         .update(WalletEntity)
         .set({
           WL_Amount: () => `"WL_Amount" + ${amount}`,
@@ -92,7 +115,6 @@ export class WalletService {
         .where('WL_Id = :WL_Id', { WL_Id: walletId })
         .returning('*')
         .execute();
-
       return wallet.raw[0];
     } catch (error) {
       throw new BadRequestException(error, {

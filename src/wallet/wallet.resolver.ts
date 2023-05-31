@@ -1,6 +1,13 @@
 // Libs
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
-import { ParseIntPipe } from '@nestjs/common';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  Int,
+  Subscription,
+} from '@nestjs/graphql';
+import { Inject, ParseIntPipe, ParseUUIDPipe } from '@nestjs/common';
 
 // Entity import
 import { WalletEntity } from 'src/entities/wallet.entity';
@@ -11,10 +18,14 @@ import { WalletService } from './wallet.service';
 // Query Input Graph API importing
 import { CreateWalletInput } from './dto/create-wallet.input';
 import { DepositWalletInput } from './dto/deposit-wallet.input';
+import { PubSub } from 'graphql-subscriptions';
 
 @Resolver(() => WalletEntity)
 export class WalletResolver {
-  constructor(private readonly walletService: WalletService) {}
+  constructor(
+    @Inject('PUB_SUB') private readonly pubSub: PubSub,
+    private readonly walletService: WalletService,
+  ) {}
 
   @Mutation(() => WalletEntity)
   createWallet(
@@ -36,11 +47,38 @@ export class WalletResolver {
     return this.walletService.findOneById(walletId);
   }
 
+  @Subscription(() => [WalletEntity], {
+    name: 'walletOfUser',
+  })
+  subscribeWallet() {
+    return this.pubSub.asyncIterator('walletOfUser');
+  }
+
+  @Query(() => [WalletEntity], { name: 'walletOfUser' })
+  async getWalletOfUser(
+    @Args(
+      'userId',
+      { type: () => String, nullable: false },
+      new ParseUUIDPipe(),
+    )
+    userId: string,
+  ) {
+    const wallets = await this.walletService.getWalletOfUser(userId);
+    this.pubSub.publish('walletOfUser', {
+      walletOfUser: wallets,
+    });
+    return wallets;
+  }
+
   @Mutation(() => WalletEntity)
-  depositWallet(
+  async depositWallet(
     @Args('depositWalletInput') depositWalletInput: DepositWalletInput,
   ): Promise<WalletEntity> {
-    return this.walletService.depositWallet(depositWalletInput);
+    const depositedWallet: any = await this.walletService.depositWallet(
+      depositWalletInput,
+    );
+    await this.getWalletOfUser(depositedWallet.userUSId);
+    return depositedWallet;
   }
 
   @Mutation(() => WalletEntity, { name: 'removeWallet' })
