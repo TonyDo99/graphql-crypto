@@ -1,5 +1,5 @@
 // LIBS
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
 import {
   Column,
   CreateDateColumn,
@@ -60,11 +60,15 @@ export class CoinEntity {
   @Column({ type: 'bigint', nullable: true })
   CN_Max_Supply: number;
 
-  @Field(() => Date, { description: 'create time of coin market' })
+  @Field(() => GraphQLISODateTime, {
+    description: 'create time of coin market',
+  })
   @CreateDateColumn()
   created_at: Date;
 
-  @Field(() => Date, { description: 'last update of coin market' })
+  @Field(() => GraphQLISODateTime, {
+    description: 'last update of coin market',
+  })
   @UpdateDateColumn()
   last_updated: Date;
 }

@@ -1,5 +1,5 @@
 // LIBS
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
 import {
   Column,
   CreateDateColumn,
@@ -35,11 +35,13 @@ export class HistoryEntity {
   @Column({ type: 'int' })
   HSR_quantity: number;
 
-  @Field(() => String, { description: 'create date history' })
+  @Field(() => GraphQLISODateTime, { description: 'create date history' })
   @CreateDateColumn()
   created_at: Date;
 
-  @Field(() => String, { description: 'last update history bought' })
+  @Field(() => GraphQLISODateTime, {
+    description: 'last update history bought',
+  })
   @UpdateDateColumn()
   last_updated: Date;
 

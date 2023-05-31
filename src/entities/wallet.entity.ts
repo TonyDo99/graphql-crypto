@@ -1,5 +1,5 @@
 // LIBS
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
 
 // IMPORT ENTITIES MODELS
 import {
@@ -38,11 +38,11 @@ export class WalletEntity {
   @Column({ type: 'varchar', nullable: true })
   WL_Image: string;
 
-  @Field(() => Date)
+  @Field(() => GraphQLISODateTime)
   @CreateDateColumn()
   created_at: Date;
 
-  @Field(() => Date)
+  @Field(() => GraphQLISODateTime)
   @UpdateDateColumn()
   last_updated: Date;
 
